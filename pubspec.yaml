@@ -38,6 +38,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   font_awesome_flutter: ^10.3.0
   geolocator: ^9.0.2
+  network_image:
+    path: network_image
 
 
 dev_dependencies:

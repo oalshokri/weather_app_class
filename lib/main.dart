@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'screens/loading_screen.dart';
+import 'package:weather_app/screens/location_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,8 +12,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(
         primaryColor: Color(0xff131410),
       ),
-      home: LoadingScreen(),
-      // home: const LocationScreen(),
+      // home: LoadingScreen(),
+      home: const LocationScreen(),
     );
   }
 }

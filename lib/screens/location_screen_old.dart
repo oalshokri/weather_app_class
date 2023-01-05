@@ -13,21 +13,24 @@ class LocationScreen extends StatefulWidget {
 }
 
 class LocationScreenState extends State<LocationScreen> {
-  ImageProvider networkImage =
+  ImageProvider image =
       const NetworkImage('https://source.unsplash.com/random/?cloud');
 
-  ImageProvider assetImage = const AssetImage('images/location_background.jpg');
+  bool isLoaded = false;
 
-  bool doneLoading = false;
-  @override
-  void initState() {
-    networkImage
-        .resolve(ImageConfiguration())
-        .addListener(ImageStreamListener((_, __) {
+  void checkImageLoaded() {
+    image
+        .resolve(const ImageConfiguration())
+        .addListener(ImageStreamListener((_image, synchronousCall) {
       setState(() {
-        doneLoading = true;
+        isLoaded = true;
       });
     }));
+  }
+
+  @override
+  void initState() {
+    checkImageLoaded();
     super.initState();
   }
 
@@ -36,24 +39,63 @@ class LocationScreenState extends State<LocationScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Container(
-          //   constraints: const BoxConstraints.expand(),
-          //   child: NetworkImageTest(
-          //     assetImage: assetImage,
-          //     networkImage: networkImage,
-          //   ),
-          // ),
           Container(
             constraints: const BoxConstraints.expand(),
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: doneLoading ? networkImage : assetImage,
+                image: AssetImage('images/location_background.jpg'),
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                     Colors.white.withOpacity(0.8), BlendMode.dstATop),
               ),
             ),
           ),
+          // AnimatedOpacity(
+          //   opacity: isLoaded ? 1 : 0,
+          //   duration: Duration(milliseconds: 500),
+          //   child: Container(
+          //     constraints: const BoxConstraints.expand(),
+          //     decoration: BoxDecoration(
+          //       image: DecorationImage(
+          //         image: image,
+          //         fit: BoxFit.cover,
+          //         colorFilter: ColorFilter.mode(
+          //             Colors.white.withOpacity(0.8), BlendMode.dstATop),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // Container(
+          //   constraints: const BoxConstraints.expand(),
+          //   child: AnimatedCrossFade(
+          //     firstChild: Container(
+          //       decoration: BoxDecoration(
+          //         image: DecorationImage(
+          //           image: image,
+          //           fit: BoxFit.cover,
+          //           colorFilter: ColorFilter.mode(
+          //               Colors.white.withOpacity(0.8), BlendMode.dstATop),
+          //         ),
+          //       ),
+          //     ),
+          //     secondChild: Container(
+          //       decoration: BoxDecoration(
+          //         image: DecorationImage(
+          //           image: AssetImage('images/location_background.jpg'),
+          //           fit: BoxFit.cover,
+          //           colorFilter: ColorFilter.mode(
+          //               Colors.white.withOpacity(0.8), BlendMode.dstATop),
+          //         ),
+          //       ),
+          //     ),
+          //     crossFadeState: isLoaded
+          //         ? CrossFadeState.showFirst
+          //         : CrossFadeState.showSecond,
+          //     duration: Duration(milliseconds: 1000),
+          //     firstCurve: Curves.easeInOut,
+          //     secondCurve: Curves.easeInOut,
+          //   ),
+          // ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
