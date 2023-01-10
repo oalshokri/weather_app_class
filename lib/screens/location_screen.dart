@@ -1,12 +1,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:weather_app/screens/city_screen.dart';
 
+import '../services/weather.dart';
 import '../utilities/constants.dart';
 
 class LocationScreen extends StatefulWidget {
-  const LocationScreen({super.key});
+  final weatherData;
+  const LocationScreen({super.key, this.weatherData});
 
   @override
   LocationScreenState createState() => LocationScreenState();
@@ -19,6 +21,27 @@ class LocationScreenState extends State<LocationScreen> {
   ImageProvider assetImage = const AssetImage('images/location_background.jpg');
 
   bool doneLoading = false;
+
+  WeatherModel weather = WeatherModel();
+
+  num temp = 0;
+  int condition = 0;
+  String description = 'there is no weather data';
+  late String cityName = '';
+  late String icon = 'Error';
+
+  void updateUi() {
+    setState(() {
+      if (widget.weatherData != null) {
+        temp = widget.weatherData['main']['temp'];
+        condition = widget.weatherData['weather'][0]['id'];
+        cityName = widget.weatherData['name'];
+        description = weather.getMessage(temp.toInt());
+        icon = weather.getWeatherIcon(condition);
+      }
+    });
+  }
+
   @override
   void initState() {
     networkImage
@@ -28,6 +51,8 @@ class LocationScreenState extends State<LocationScreen> {
         doneLoading = true;
       });
     }));
+
+    updateUi();
     super.initState();
   }
 
@@ -36,21 +61,32 @@ class LocationScreenState extends State<LocationScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Container(
-          //   constraints: const BoxConstraints.expand(),
-          //   child: NetworkImageTest(
-          //     assetImage: assetImage,
-          //     networkImage: networkImage,
-          //   ),
-          // ),
           Container(
             constraints: const BoxConstraints.expand(),
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: doneLoading ? networkImage : assetImage,
+                image: assetImage,
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                     Colors.white.withOpacity(0.8), BlendMode.dstATop),
+              ),
+            ),
+          ),
+          AnimatedOpacity(
+            opacity: doneLoading ? 1 : 0,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            child: Container(
+              constraints: const BoxConstraints.expand(),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: networkImage,
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    Colors.white.withOpacity(0.8),
+                    BlendMode.dstATop,
+                  ),
+                ),
               ),
             ),
           ),
@@ -71,7 +107,14 @@ class LocationScreenState extends State<LocationScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CityScreen(),
+                          ),
+                        );
+                      },
                       child: const Icon(
                         Icons.location_city,
                         size: 50.0,
@@ -86,16 +129,16 @@ class LocationScreenState extends State<LocationScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Icon(
-                      FontAwesomeIcons.cloudSun,
-                      size: 120,
+                    Text(
+                      icon,
+                      style: kTempTextStyle,
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.baseline,
                       textBaseline: TextBaseline.alphabetic,
                       children: [
-                        const Text(
-                          '32',
+                        Text(
+                          '${temp.round()}',
                           style: kTempTextStyle,
                         ),
                         Column(
@@ -137,10 +180,10 @@ class LocationScreenState extends State<LocationScreen> {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(right: 24.0),
+              Padding(
+                padding: EdgeInsets.only(right: 24.0, bottom: 24),
                 child: Text(
-                  "It's 🥶 in gaza! Dress 🧤🧣 ",
+                  '$description in $cityName',
                   textAlign: TextAlign.right,
                   style: kMessageTextStyle,
                 ),
