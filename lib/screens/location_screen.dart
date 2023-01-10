@@ -113,7 +113,7 @@ class LocationScreenState extends State<LocationScreen> {
                           MaterialPageRoute(
                             builder: (context) => CityScreen(),
                           ),
-                        );
+                        ).then((value) => null);
                       },
                       child: const Icon(
                         Icons.location_city,

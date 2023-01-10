@@ -13,4 +13,12 @@ class NetworkHelper {
       return jsonDecode(response.body);
     }
   }
+
+  Future<dynamic> getDataByCityName(String city) async {
+    Response response = await get(Uri.parse(
+        'https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+  }
 }
