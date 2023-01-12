@@ -30,12 +30,12 @@ class LocationScreenState extends State<LocationScreen> {
   late String cityName = '';
   late String icon = 'Error';
 
-  void updateUi() {
+  void updateUi(var wData) {
     setState(() {
-      if (widget.weatherData != null) {
-        temp = widget.weatherData['main']['temp'];
-        condition = widget.weatherData['weather'][0]['id'];
-        cityName = widget.weatherData['name'];
+      if (wData != null) {
+        temp = wData['main']['temp'];
+        condition = wData['weather'][0]['id'];
+        cityName = wData['name'];
         description = weather.getMessage(temp.toInt());
         icon = weather.getWeatherIcon(condition);
       }
@@ -52,7 +52,7 @@ class LocationScreenState extends State<LocationScreen> {
       });
     }));
 
-    updateUi();
+    updateUi(widget.weatherData);
     super.initState();
   }
 
@@ -99,7 +99,9 @@ class LocationScreenState extends State<LocationScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        updateUi(widget.weatherData);
+                      },
                       child: const Icon(
                         Icons.near_me,
                         size: 50.0,
@@ -107,13 +109,14 @@ class LocationScreenState extends State<LocationScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        var result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => CityScreen(),
                           ),
-                        ).then((value) => null);
+                        );
+                        updateUi(result);
                       },
                       child: const Icon(
                         Icons.location_city,

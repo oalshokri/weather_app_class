@@ -29,7 +29,9 @@ class CityScreenState extends State<CityScreen> {
               Align(
                 alignment: Alignment.topLeft,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: const Icon(
                     Icons.arrow_back_ios,
                     size: 50.0,
@@ -41,6 +43,7 @@ class CityScreenState extends State<CityScreen> {
                 child: TextField(
                   onChanged: (value) {
                     cityName = value;
+                    print(value);
                   },
                   decoration: InputDecoration(
                     icon: Icon(Icons.location_city),
@@ -54,12 +57,10 @@ class CityScreenState extends State<CityScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () {
-                  if (cityName != null) {
-                    var weatherData =
-                        NetworkHelper().getDataByCityName(cityName!);
-                  }
-                  Navigator.pop(context, cityName);
+                onPressed: () async {
+                  var weatherData =
+                      await NetworkHelper().getDataByCityName(cityName!);
+                  Navigator.pop(context, weatherData);
                 },
                 child: const Text(
                   'Get Weather',
